@@ -117,6 +117,15 @@ def talk_queue(w):
     w.do(2, "off"); w.run(3000); w.expect([], [], [])
 
 
+def many_agree_one_buzz(w):
+    w.do(0, "talk"); w.run(500)
+    w.do(1, "a"); w.do(2, "a"); w.run(1000); w.expect(["AGREE"], [], [])  # both at once
+    w.do(1, "a"); w.run(1000); w.expect([], [], [])  # and again shortly after
+    w.do(2, "d"); w.run(1000); w.expect(["DISAGREE"], [], [])  # a different signal still gets through
+    w.run(3000)
+    w.do(1, "a"); w.run(1000); w.expect(["AGREE"], [], [])  # later agreement buzzes again
+
+
 def new_topic(w):
     w.do(0, "talk"); w.run(300)
     w.do(1, "topic"); w.run(300)
@@ -196,7 +205,7 @@ def lossy_radio(w):
     w.expect(["BREAK"], ["BREAK"], ["BREAK"])
 
 
-SCENARIOS = [talk_queue, new_topic, topic_withdrawn, topic_never_started, talk_interrupts_topic,
+SCENARIOS = [talk_queue, many_agree_one_buzz, new_topic, topic_withdrawn, topic_never_started, talk_interrupts_topic,
              break_vote, break_withdrawn, speaker_battery_dies, same_moment, lossy_radio]
 
 

@@ -13,6 +13,7 @@ TOPIC_SETTLE_MS = 1500
 TOPIC_GRACE_MS = 8000
 EVENT_REPEAT_MS = 80
 EVENT_REPEATS = 3
+FEEDBACK_MERGE_MS = 3000
 
 
 class Peer:
@@ -44,6 +45,7 @@ class Core:
         self.resend_at = None
         self.next_eid = event_seed
         self.peers = {}
+        self.fed_at = {}  # last time each kind of feedback was felt
         self.pending = []  # [eid, type, left, at]
         self.lines = []  # packets to broadcast
         self.patterns = []  # vibration patterns to play
@@ -121,7 +123,9 @@ class Core:
                 p.seen = (p.seen + [eid])[-4:]
                 if self.is_speaker():
                     name = {"A": "AGREE", "D": "DISAGREE", "C": "COMMENT"}.get(kind)
-                    if name:
+                    last = self.fed_at.get(name)
+                    if name and (last is None or now - last >= FEEDBACK_MERGE_MS):
+                        self.fed_at[name] = now
                         self.patterns.append(name)
         except ValueError:
             return

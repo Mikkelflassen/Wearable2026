@@ -53,6 +53,7 @@ static const uint32_t TOPIC_SETTLE_MS = 1500;  // talk queue must stay empty thi
 static const uint32_t TOPIC_GRACE_MS = 8000;   // time to move the snap topic -> talk
 static const uint32_t EVENT_REPEAT_MS = 80;    // events are sent 3 times (no ACKs)
 static const int EVENT_REPEATS = 3;
+static const uint32_t FEEDBACK_MERGE_MS = 3000; // same signal again within this = still one buzz
 static const int MAX_PEERS = 8;
 static const int W26_LINE = 64;
 
@@ -159,9 +160,15 @@ class Core {
       p->seenPos = (p->seenPos + 1) % SEEN;
       if (p->seenN < SEEN) p->seenN++;
       if (!isSpeaker()) return;  // feedback is only felt by the speaker
-      if (type == 'A') pushPattern(P_AGREE);
-      if (type == 'D') pushPattern(P_DISAGREE);
-      if (type == 'C') pushPattern(P_COMMENT);
+      // The speaker only needs to know that SOMEONE agrees/disagrees/has a
+      // comment, not how many: the same signal from several people close
+      // together is felt as one buzz.
+      int k = type == 'A' ? 0 : type == 'D' ? 1 : type == 'C' ? 2 : -1;
+      if (k < 0) return;
+      if (fedBefore_[k] && now - fedAt_[k] < FEEDBACK_MERGE_MS) return;
+      fedBefore_[k] = true;
+      fedAt_[k] = now;
+      pushPattern(k == 0 ? P_AGREE : k == 1 ? P_DISAGREE : P_COMMENT);
     }
   }
 
@@ -390,6 +397,8 @@ class Core {
   uint32_t lastStateAt_ = 0, resendAt_ = 0;
   bool resendPending_ = false;
   uint16_t nextEid_ = 0;
+  bool fedBefore_[3] = {false, false, false};
+  uint32_t fedAt_[3] = {0, 0, 0};
   Peer peers_[MAX_PEERS];
   Pending pending_[MAX_PENDING];
   char out_[OUTQ][W26_LINE];

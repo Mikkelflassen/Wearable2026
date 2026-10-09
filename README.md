@@ -14,6 +14,7 @@ a talking queue, a new-topic queue, a break vote, and agree / disagree / "I have
 | Press **agree** once | The speaker feels 1 short buzz |
 | Press **disagree** once | The speaker feels 2 short buzzes |
 | Press either button **twice** | The speaker feels 3 short buzzes: "someone has a comment on this" |
+| Several people send the same signal within 3 s | The speaker feels it once: it means "someone", not how many |
 | Snap onto **talk** | You join the talking queue. First in the queue is the speaker. When the person in front of you unsnaps, you feel one long buzz: your turn |
 | Snap onto **topic** | You join the new-topic queue. When the talking queue has been empty for 1.5 s, the first person feels two long buzzes. Move the snap to **talk** to start the topic (you have 8 s before the next person is offered the slot). Unsnap earlier and you simply leave the queue |
 | Snap onto **pause** | Your wish for a break is remembered, also after you move the snap elsewhere. When more than half of the bracelets present want a break, everyone feels a rapid rattle + one very long buzz, and all wishes are reset |
@@ -42,11 +43,18 @@ Buttons and snaps just connect a pin to GND; no resistors needed (internal pull-
 
 Avoid GPIO 2, 8 and 9 for your own parts (they decide how the board boots; 8 is the LED).
 
-**Motor.** A GPIO pin cannot power a vibration motor directly. Use a small NPN transistor
-(2N2222, BC337, S8050 …): GPIO 10 → 1 kΩ → base, emitter → GND, collector → motor −,
-motor + → the 5V pin, and a diode (1N4148 / 1N400x) across the motor with the stripe towards
-motor +. If your motor is a ready-made module with VCC / GND / IN pins, it already contains
-this: connect IN to GPIO 10.
+**Motor (mini 3.0 V).** A GPIO pin cannot power a vibration motor directly, so do not connect
+the motor straight to GPIO 10. Use a small NPN transistor (BC547, PN2222, S8050 … most Arduino
+starter kits have one): GPIO 10 → 1 kΩ → base, emitter → GND, collector → motor −,
+motor + → the **3V3** pin (not 5V: on USB that pin carries 5 V, too much for a 3 V motor), and
+a diode (1N4007 / 1N4148) across the motor with the stripe towards motor +. A 100 µF capacitor
+between 3V3 and GND (long leg to 3V3) keeps the radio steady when the motor starts.
+
+**No transistor yet?** Put an LED on GPIO 10 instead (GPIO 10 → 220 Ω → LED long leg, short
+leg → GND). It blinks the exact vibration patterns, and the serial monitor prints `# vibe …`.
+
+**No snaps yet?** Plug a jumper wire into GPIO 5, 6 and 7 and one into GND. Touching the GND
+wire to one of the three is exactly what the snap will do.
 
 **Battery.** Battery → HW-373 `B+` / `B-`; HW-373 `OUT+` / `OUT-` → switch → 5V pin / GND.
 
