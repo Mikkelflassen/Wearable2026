@@ -33,12 +33,13 @@ struct Button {
 
 // ---- wiring (see README) ---------------------------------------------------
 // Buttons and snaps connect the pin to GND; the internal pull-ups are used.
-const uint8_t PIN_BTN_AGREE = 3;
-const uint8_t PIN_BTN_DISAGREE = 4;
+const uint8_t PIN_BTN_AGREE = 4;
+const uint8_t PIN_BTN_DISAGREE = 3;
 const uint8_t PIN_SNAP_TALK = 5;   // the three snaps sewn onto the bracelet
 const uint8_t PIN_SNAP_TOPIC = 6;
 const uint8_t PIN_SNAP_PAUSE = 7;  // (the loose snap on the wire goes to GND)
-const uint8_t PIN_MOTOR = 10;      // to the transistor/driver, NOT straight to the motor
+const uint8_t PIN_MOTOR = 2;       // to the transistor/driver, NOT straight to the motor
+                                   // (GPIO 2 is a boot pin: if the board stops starting, move this)
 const uint8_t PIN_LED = 8;         // on-board LED, lit when LOW
 
 const uint8_t RADIO_CHANNEL = 1;   // must be the same on all bracelets
