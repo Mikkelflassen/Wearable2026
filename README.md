@@ -37,20 +37,20 @@ Buttons and snaps just connect a pin to GND; no resistors needed (internal pull-
 | GPIO 6 | Fixed snap "topic" |
 | GPIO 7 | Fixed snap "pause" |
 | GND | The loose snap on the wire |
-| GPIO 10 | Motor driver input (see below) |
+| GPIO 1 | Motor driver input (see below) |
 | 5V pin | Charger `OUT+` through an on/off switch |
 | GND | Charger `OUT-` |
 
 Avoid GPIO 2, 8 and 9 for your own parts (they decide how the board boots; 8 is the LED).
 
 **Motor (mini 3.0 V).** A GPIO pin cannot power a vibration motor directly, so do not connect
-the motor straight to GPIO 10. Use a small NPN transistor (BC547, PN2222, S8050 … most Arduino
-starter kits have one): GPIO 10 → 1 kΩ → base, emitter → GND, collector → motor −,
+the motor straight to GPIO 1. Use a small NPN transistor (BC547, PN2222, S8050 … most Arduino
+starter kits have one): GPIO 1 → 1 kΩ → base, emitter → GND, collector → motor −,
 motor + → the **3V3** pin (not 5V: on USB that pin carries 5 V, too much for a 3 V motor), and
 a diode (1N4007 / 1N4148) across the motor with the stripe towards motor +. A 100 µF capacitor
 between 3V3 and GND (long leg to 3V3) keeps the radio steady when the motor starts.
 
-**No transistor yet?** Put an LED on GPIO 10 instead (GPIO 10 → 220 Ω → LED long leg, short
+**No transistor yet?** Put an LED on GPIO 1 instead (GPIO 1 → 220 Ω → LED long leg, short
 leg → GND). It blinks the exact vibration patterns, and the serial monitor prints `# vibe …`.
 
 **No snaps yet?** Plug a jumper wire into GPIO 5, 6 and 7 and one into GND. Touching the GND
