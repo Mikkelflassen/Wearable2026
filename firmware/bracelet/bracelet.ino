@@ -238,6 +238,11 @@ void runMotor(uint32_t now) {
     if (p == P_NONE) return;
     Serial.print("# vibe ");
     Serial.println(patternName(p));
+    {  // also tell a USB radio bridge, so the laptop sees it when on battery
+      char info[W26_LINE];
+      snprintf(info, sizeof(info), "W26 V %u %s", (unsigned)core.id(), patternName(p));
+      radioSend(info);
+    }
     steps = patternSteps(p);
     step = 0;
     stepEnd = now + steps[0];

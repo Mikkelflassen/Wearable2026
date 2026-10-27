@@ -105,7 +105,11 @@ class Hub:
             if self.transport:
                 while not self.transport.inbox.empty():
                     line = self.transport.inbox.get()
-                    if line.startswith("W26 "):
+                    if line.startswith("W26 V "):  # a battery bracelet buzzed (via the bridge)
+                        parts = line.split()
+                        if len(parts) == 4:
+                            self._feel("real " + parts[2], parts[3])
+                    elif line.startswith("W26 "):
                         if self.show_packets:
                             self.emit("      real -> %s" % line)
                         for c in self.cores.values():

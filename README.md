@@ -94,6 +94,21 @@ serial monitor first; only one program can use the port.
 The real bracelet copies everything between USB and radio, so later the same command also
 works with two real bracelets and one pretend one.
 
+## Run a bracelet on battery and still follow it on the laptop
+
+The ESP32's USB cable and the battery must **never** power the 5V pin at the same time:
+USB would push 5 V straight into the battery. Two safe ways:
+
+**Option 1 - radio bridge (no cable on the bracelet).** Flash `firmware/bridge` on a spare
+ESP32-C3 and leave it plugged into the laptop. It is not a bracelet; it only relays radio
+messages to USB. Then `python3 sim/sim.py --port <bridge port>`: the pretend bracelets talk
+to the battery bracelet, and you see `>> bracelet real 9004 feels: ...` when it vibrates.
+
+**Option 2 - Schottky diode.** Put a 1N5817 / 1N5819 between the charger's OUT+ (no stripe)
+and the ESP32's 5V pin (stripe). The diode stops USB current from flowing into the battery,
+so the bracelet can be on USB and battery at once. A 1N4007 does not work here (it loses too
+much voltage). Charge the battery through the HW-373's own USB-C socket.
+
 ## How the bracelets talk
 
 ESP-NOW broadcast: it uses the Wi-Fi radio but needs no router, hotspot or password, so it
