@@ -31,7 +31,7 @@ Buttons and snaps just connect a pin to GND; no resistors needed (internal pull-
 
 | ESP32-C3 Super Mini | Goes to |
 |---|---|
-| GPIO 4 | Agree button → GND |
+| GPIO 0 | Agree button → GND |
 | GPIO 3 | Disagree button → GND |
 | GPIO 5 | Fixed snap "talk" |
 | GPIO 6 | Fixed snap "topic" |
