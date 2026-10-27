@@ -34,7 +34,7 @@ struct Button {
 // ---- wiring (see README) ---------------------------------------------------
 // Buttons and snaps connect the pin to GND; the internal pull-ups are used.
 const uint8_t PIN_BTN_AGREE = 0;
-const uint8_t PIN_BTN_DISAGREE = 3;
+const uint8_t PIN_BTN_DISAGREE = 4;
 const uint8_t PIN_SNAP_TALK = 5;   // the three snaps sewn onto the bracelet
 const uint8_t PIN_SNAP_TOPIC = 6;
 const uint8_t PIN_SNAP_PAUSE = 7;  // (the loose snap on the wire goes to GND)
