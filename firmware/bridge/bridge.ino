@@ -17,16 +17,16 @@
 #include <esp_wifi.h>
 
 const uint8_t RADIO_CHANNEL = 1;  // must match RADIO_CHANNEL in bracelet.ino
-const int LINE_MAX = 64;
+const int BRIDGE_LINE = 64;
 const uint8_t BROADCAST[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 QueueHandle_t radioQueue;
 bool radioOk = false;
 
 void handleRadioPacket(const uint8_t* data, int len) {
-  char buf[LINE_MAX];
-  if (len <= 0 || len >= LINE_MAX) return;
+  char buf[BRIDGE_LINE];
+  if (len <= 0 || len >= BRIDGE_LINE) return;
   memcpy(buf, data, len);
-  memset(buf + len, 0, LINE_MAX - len);
+  memset(buf + len, 0, BRIDGE_LINE - len);
   xQueueSend(radioQueue, buf, 0);
 }
 
@@ -42,7 +42,7 @@ void onRadio(const uint8_t* mac, const uint8_t* data, int len) {
 
 void setup() {
   Serial.begin(115200);
-  radioQueue = xQueueCreate(16, LINE_MAX);
+  radioQueue = xQueueCreate(16, BRIDGE_LINE);
   WiFi.mode(WIFI_STA);
   esp_wifi_set_channel(RADIO_CHANNEL, WIFI_SECOND_CHAN_NONE);
   if (esp_now_init() == ESP_OK) {
@@ -59,10 +59,10 @@ void setup() {
 }
 
 void loop() {
-  char line[LINE_MAX];
+  char line[BRIDGE_LINE];
   while (xQueueReceive(radioQueue, line, 0) == pdTRUE) Serial.println(line);
 
-  static char in[LINE_MAX];
+  static char in[BRIDGE_LINE];
   static uint8_t n = 0;
   while (Serial.available()) {
     char c = Serial.read();
@@ -73,7 +73,7 @@ void loop() {
       else if (n && in[0] == '!')
         Serial.println("# this is the radio bridge: use the bracelet's own buttons and snaps");
       n = 0;
-    } else if (n < LINE_MAX - 1) {
+    } else if (n < BRIDGE_LINE - 1) {
       in[n++] = c;
     }
   }
